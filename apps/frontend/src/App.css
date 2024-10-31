@@ -1,0 +1,22 @@
+.gradient-text {
+  @apply inline-block text-transparent bg-clip-text bg-gradient-to-r from-lime-500 to-emerald-500;
+}
+
+.card {
+  @apply bg-[#171717] backdrop-blur border border-[#2E2E2E];
+}
+
+.card-hover{
+    @apply  transform hover:scale-[0.98] transition-transform duration-300 active:scale-95
+}
+
+
+.spin-loader {
+  border-top-color: transparent !important;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

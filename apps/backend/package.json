@@ -1,0 +1,36 @@
+{
+  "name": "timebloom-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon",
+    "start": "node dist/index.js",
+    "build": "tsc -p ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "mongoose": "^8.7.3",
+    "passport": "^0.7.0",
+    "passport-google-oauth2": "^0.2.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/express-session": "^1.18.0",
+    "@types/node": "^22.8.1",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth2": "^0.1.10",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "5.5.4"
+  }
+}
