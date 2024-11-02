@@ -26,6 +26,7 @@ const BloomProgressSchema: Schema<BloomProgressDocument> = new Schema(
     },
     date: {
       type: Date,
+      default: Date.now,
       required: true,
     },
     sessions: [
@@ -49,7 +50,7 @@ const BloomProgressSchema: Schema<BloomProgressDocument> = new Schema(
 // Compound index for efficient querying by user, bloom task, and date
 BloomProgressSchema.index({ userId: 1, bloomId: 1, date: 1 }, { unique: true });
 
-const ProgressModel: Model<BloomProgressDocument> =
+const BloomProgressModel: Model<BloomProgressDocument> =
   mongoose.model<BloomProgressDocument>("BloomProgress", BloomProgressSchema);
 
-export default ProgressModel;
+export default BloomProgressModel;

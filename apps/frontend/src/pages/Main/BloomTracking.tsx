@@ -116,7 +116,7 @@ const BloomTracking = () => {
     }, []);
 
     return (
-        <div className="flex items-center justify-center flex-col w-full">
+        <div className="flex items-center justify-center flex-col w-full h-full">
             {/* <div className="flex items-center space-x-4">
                 <Timer className="text-blue-600" />
                 <Input
@@ -134,7 +134,7 @@ const BloomTracking = () => {
 
             {sessionCounts(bloomData?.numberOfSessions)}
 
-            <div className="text-center text-9xl font-head font-bold text-white/95 tracking-wider mt-8" style={{ fontVariantNumeric: 'tabular-nums' }}>
+            <div className="text-center text-9xl font-head font-bold text-white/95 tracking-wider mt-6" style={{ fontVariantNumeric: 'tabular-nums' }}>
                 {formatTime(timeRemaining)}
             </div>
 
