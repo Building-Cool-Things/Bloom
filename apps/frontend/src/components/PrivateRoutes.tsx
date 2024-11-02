@@ -1,12 +1,16 @@
 import { Outlet } from "react-router-dom";
 
 import Sidebar from "./SIdebar";
+import { ScrollArea } from "./ui/scroll-area";
 
 
 const PrivateRoutes = () => {
-    return <div className="flex h-full">
+    return <div className="flex h-full overflow-hidden">
         <Sidebar />
-        <Outlet />
+        <ScrollArea className="w-full h-full">
+            <Outlet />
+        </ScrollArea>
+
     </div>
 }
 

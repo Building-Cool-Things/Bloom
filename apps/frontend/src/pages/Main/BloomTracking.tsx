@@ -9,6 +9,7 @@ import { Pause, Play, RotateCcw } from 'lucide-react';
 // import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'react-router-dom';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const BloomTracking = () => {
     const location = useLocation();
@@ -76,6 +77,28 @@ const BloomTracking = () => {
 
 
 
+    const sessionCounts = (sessions: number) => {
+        const circles = [];
+
+        for (let i = 1; i <= sessions; i++) {
+            circles.push(
+                <Tooltip key={i}>
+                    <TooltipTrigger asChild>
+                        <div key={i} className='w-5 h-5 rounded-full border-2 cursor-pointer border-[#2E2E2E]'></div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Session {i}</p>
+                    </TooltipContent>
+                </Tooltip>
+
+            );
+        }
+
+        return <TooltipProvider><div className="flex space-x-2 mt-10">{circles}</div></TooltipProvider>;
+
+    };
+
+
 
 
 
@@ -106,10 +129,12 @@ const BloomTracking = () => {
                     className="flex-grow"
                 />
             </div> */}
-            <p className='bg-[#a1d6b263] px-4 py-1 rounded-lg border-[#A1D6B2] border'>{bloomData?.name}</p>
+            <p className='bg-[#a1d6b263] px-3 py-1 rounded-lg border-[#A1D6B2] border text-sm'>{bloomData?.name}</p>
 
 
-            <div className="text-center text-9xl font-head font-bold text-white/95 tracking-wider" style={{ fontVariantNumeric: 'tabular-nums' }}>
+            {sessionCounts(bloomData?.numberOfSessions)}
+
+            <div className="text-center text-9xl font-head font-bold text-white/95 tracking-wider mt-8" style={{ fontVariantNumeric: 'tabular-nums' }}>
                 {formatTime(timeRemaining)}
             </div>
 

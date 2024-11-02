@@ -1,5 +1,5 @@
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Plus } from 'lucide-react'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
@@ -27,7 +27,7 @@ const formSchema = z.object({
 })
 
 const CreateBloom = () => {
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
     const queryClient = useQueryClient()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -71,14 +71,14 @@ const CreateBloom = () => {
     };
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger>
-                <div className="h-44 w-44 p-[1px] bg-gradient-to-r from-lime-500 to-emerald-500 rounded-lg card-hover">
-                    <div className="rounded-lg p-4  flex flex-col items-center justify-center gap-4 cursor-pointer card h-full">
-                        <Plus size={32} />
-                        <p className="text-lg  font-head font-semibold">Create Bloom</p>
-                    </div>
+
+            <div className="h-44 w-44 p-[1px] bg-gradient-to-r from-lime-500 to-emerald-500 rounded-lg card-hover" onClick={() => setOpen(true)}>
+                <div className="rounded-lg p-4  flex flex-col items-center justify-center gap-4 cursor-pointer card h-full">
+                    <Plus size={32} />
+                    <p className="text-lg  font-head font-semibold">Create Bloom</p>
                 </div>
-            </DialogTrigger>
+            </div>
+
             <DialogContent className="card">
                 <DialogHeader>
                     <DialogTitle className="tracking-normal gradient-text">Start Your Bloom</DialogTitle>

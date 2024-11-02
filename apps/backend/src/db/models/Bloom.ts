@@ -22,7 +22,7 @@ const BloomSchema: Schema<BloomDocument> = new Schema(
       required: true,
     },
     dailytimeGoal: {
-      type: Number, // Time in minutes to be spent each day
+      type: Number,
       required: true,
     },
     preferredTime: {
@@ -36,6 +36,8 @@ const BloomSchema: Schema<BloomDocument> = new Schema(
     timestamps: true,
   }
 );
+
+BloomSchema.index({ name: 1, userId: 1 });
 
 const BloomModel: Model<BloomDocument> = mongoose.model<BloomDocument>(
   "Bloom",
