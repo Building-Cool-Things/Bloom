@@ -9,6 +9,7 @@ import CheckUser from "./pages/CheckUser";
 import PrivateRoutes from "./components/PrivateRoutes";
 import Dashboard from "./pages/Main/Dashboard";
 import Bloom from "./pages/Main/Bloom";
+import BloomTracking from "./pages/Main/BloomTracking";
 
 
 const App = () => {
@@ -26,6 +27,7 @@ const App = () => {
           <Route element={<PrivateRoutes />}>
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/bloom/:name/:id' element={<Bloom />} />
+            <Route path='/bloom/:name/:id/tracking' element={<BloomTracking />} />
 
           </Route>
 

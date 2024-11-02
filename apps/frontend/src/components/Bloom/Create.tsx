@@ -10,9 +10,11 @@ import { z } from "zod"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import formatTime from '@/utils/formateTime'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/axiosInstance'
 import Loader from '../Loader'
+import { useState } from 'react'
+import { LowerLimit, TIME_VALUES, UpperLimit } from '@/Constants/TImes'
 const formSchema = z.object({
     name: z.string().min(2, {
         message: "Name must be at least 2 characters.",
@@ -25,30 +27,53 @@ const formSchema = z.object({
 })
 
 const CreateBloom = () => {
-    // const queryClient = useQueryClient()
+    const [open, setOpen] = useState(true)
+    const queryClient = useQueryClient()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            dailytimeGoal: 5
+            dailytimeGoal: 5,
+
         },
     })
-
 
     const bloomMutation = useMutation({
         mutationFn: (bloomData: z.infer<typeof formSchema>) => {
             return api.post(`/bloom/create`, bloomData)
         },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['bloom'] })
+            setOpen(false)
+        }
     })
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        bloomMutation.mutate(values);
+        const data = {
+            ...values,
+            preferredTime: values.dailytimeGoal <= 49 ? values.dailytimeGoal : 25,
+            numberOfSessions: values.dailytimeGoal <= 49 ? 1 : Math.ceil(values.dailytimeGoal / 25)
+        }
+        bloomMutation.mutate(data);
     }
+    const [value, setValue] = useState([5]);
+
+
+    const handleValueChange = (newValue: number[]) => {
+        const actualValue = newValue[0];
+        // Find the closest step value
+        const closestStep = TIME_VALUES.reduce((prev, curr) => {
+            return Math.abs(curr - actualValue) < Math.abs(prev - actualValue) ? curr : prev;
+        });
+        setValue([closestStep]);
+        return [closestStep]
+
+    };
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger>
                 <div className="h-44 w-44 p-[1px] bg-gradient-to-r from-lime-500 to-emerald-500 rounded-lg card-hover">
-                    <div className="border rounded-lg p-4  flex flex-col items-center justify-center gap-4 cursor-pointer card h-full">
+                    <div className="rounded-lg p-4  flex flex-col items-center justify-center gap-4 cursor-pointer card h-full">
                         <Plus size={32} />
                         <p className="text-lg  font-head font-semibold">Create Bloom</p>
                     </div>
@@ -83,8 +108,18 @@ const CreateBloom = () => {
                                         <FormItem>
                                             <FormLabel>Daily Commitment</FormLabel>
 
-                                            <div className="grid grid-cols-[5fr_1fr] items-center gap-3">
-                                                <Slider value={[field.value]} min={5} max={480} step={5} onValueChange={(value) => field.onChange(value[0])} />
+                                            <div className="grid grid-cols-[5fr_1fr] items-center gap-3 pb-4">
+                                                <Slider value={value}
+                                                    onValueChange={
+                                                        (value) => {
+                                                            const val = handleValueChange(value)
+                                                            field.onChange(val[0])
+                                                        }
+                                                    }
+
+                                                    min={LowerLimit}
+                                                    max={UpperLimit}
+                                                    step={1} />
                                                 <p className="text-sm whitespace-nowrap text-right">{formatTime(field.value)}</p>
                                             </div>
                                             <FormMessage />
@@ -96,8 +131,6 @@ const CreateBloom = () => {
                                         {
                                             bloomMutation.isPending ? <Loader size="24px " /> : 'Start'
                                         }
-
-
                                     </Button>
                                 </div>
 

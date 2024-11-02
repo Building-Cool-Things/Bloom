@@ -14,8 +14,21 @@ class Bloom {
 
   async getAllBlooms(userId: string) {
     try {
-      const bloom = await BloomModel.find({
+      const blooms = await BloomModel.find({
         userId,
+      });
+
+      return blooms;
+    } catch (error) {
+      showError(error);
+    }
+  }
+
+  async getBloom(userId: string, id: string) {
+    try {
+      const bloom = await BloomModel.findOne({
+        userId,
+        _id: id,
       });
 
       return bloom;

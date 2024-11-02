@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 const CheckUser = () => {
     const navigate = useNavigate()
     const { setUser } = useAuth()
-    const { isPending, data, error } = useQuery({
+    const { data, error, isLoading } = useQuery({
         queryKey: ['check-user'],
         queryFn: async () => {
             const { data } = await api.get('/user/check')
@@ -17,19 +17,19 @@ const CheckUser = () => {
         },
 
     })
-    console.log('data',data)
+    console.log('data', data)
     useEffect(() => {
-        if (!isPending && !error && data) {
+        if (!isLoading && !error && data) {
             console.log('user', data)
-            setUser(data);
+            setUser(data?.user);
             navigate('/dashboard')
-        } else if (!isPending && !data) {
+        } else if (!isLoading && !data) {
             navigate('/sign-in')
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data]);
 
-    if (isPending) {
+    if (isLoading) {
         return (
             <div className="flex h-full items-center justify-center flex-col">
                 <motion.svg

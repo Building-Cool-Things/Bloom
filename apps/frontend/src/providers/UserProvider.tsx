@@ -1,9 +1,16 @@
 import React, { Dispatch, SetStateAction, useContext, useState } from "react"
 
 interface User {
-     id: string;
-     userName: string;
-     imageUrl: string
+     _id: string,
+     name: string,
+     email: string,
+     provider: string,
+     avatar: string,
+     verified: boolean,
+     createdAt: Date,
+     updatedAt: Date,
+
+
 }
 
 

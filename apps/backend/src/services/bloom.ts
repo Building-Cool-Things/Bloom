@@ -19,7 +19,16 @@ class BloomService {
 
   async getAllBloom(userId: string) {
     try {
-      const bloom = await this.Bloom.getAllBlooms(userId);
+      const blooms = await this.Bloom.getAllBlooms(userId);
+      return blooms;
+    } catch (err) {
+      showError(err);
+    }
+  }
+
+  async getBloomById(userId: string, id: string) {
+    try {
+      const bloom = await this.Bloom.getBloom(userId, id);
       return bloom;
     } catch (err) {
       showError(err);
