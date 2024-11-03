@@ -1,5 +1,5 @@
 import BloomProgress from "../db/logics/bloomProgress";
-import { BloomProgressType } from "../db/models/BloomProgress";
+import { BloomProgressType, sessionType } from "../db/models/BloomProgress";
 import showError from "../utils/showError";
 
 class BloomProgressService {
@@ -25,6 +25,19 @@ class BloomProgressService {
 
         if (createBloom) return createBloom;
       }
+    } catch (err) {
+      showError(err);
+    }
+  }
+
+  async createProgress(userId: string, bloomId: string, session: sessionType) {
+    try {
+      const progress = await this.BloomProgress.addSession(
+        userId,
+        bloomId,
+        session
+      );
+      if (progress) return progress;
     } catch (err) {
       showError(err);
     }

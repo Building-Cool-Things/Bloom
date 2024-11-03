@@ -1,13 +1,14 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
 
+export interface sessionType {
+  timeSpent: number;
+  loggedAt: Date;
+}
 export interface BloomProgressType {
   userId: typeof Schema.Types.ObjectId;
   bloomId: typeof Schema.Types.ObjectId;
   date: Date;
-  sessions: {
-    timeSpent: number;
-    loggedAt: Date;
-  }[];
+  sessions: sessionType[];
 }
 
 interface BloomProgressDocument extends BloomProgressType, Document {}

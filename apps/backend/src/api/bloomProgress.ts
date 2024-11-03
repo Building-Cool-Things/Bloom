@@ -35,4 +35,33 @@ router.post(
   }
 );
 
+router.post(
+  "/session/:bloomId",
+  isAuthenticated,
+  async (req: Request, res: Response): Promise<any> => {
+    try {
+      const userId = (req.user as ExtendedUserType)?._id;
+      const bloomId = req.params.bloomId;
+      const sessions = req.body;
+      const addSession = await BloomProgress.createProgress(
+        userId,
+        bloomId,
+        sessions
+      );
+      if (addSession) {
+        res.json({
+          success: true,
+          addSession,
+        });
+      } else {
+        res.json({
+          success: false,
+        });
+      }
+    } catch (err) {
+      showError(err);
+    }
+  }
+);
+
 export default router;

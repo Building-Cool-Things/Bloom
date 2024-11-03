@@ -13,7 +13,7 @@ const Navbar = () => {
     return (
         <div className="h-[48px] px-16 py-2 flex items-center justify-between border-b border-[#2E2E2E] sticky top-0">
             <div className="flex items-center gap-2" onClick={() => navigate('/')}>
-                <Flower color="#10b981" />
+                <Flower className="stroke-lime-500" />
                 <p className="font-head font-bold text-xl">Bloom</p>
             </div>
             {

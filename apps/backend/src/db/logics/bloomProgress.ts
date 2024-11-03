@@ -1,5 +1,6 @@
+import currentDate from "../../utils/currentDate";
 import showError from "../../utils/showError";
-import BloomProgressModel from "../models/BloomProgress";
+import BloomProgressModel, { sessionType } from "../models/BloomProgress";
 
 class BloomProgress {
   async createBloomProgress(userId: string, bloomId: string) {
@@ -43,14 +44,7 @@ class BloomProgress {
 
   async checkBloomCreate(userId: string, bloomId: string) {
     try {
-      const startOfDay = new Date();
-      // Set to start of the day in UTC
-      startOfDay.setUTCHours(0, 0, 0, 0);
-
-      const endOfDay = new Date();
-      // Set to end of the day in UTC
-      endOfDay.setUTCHours(23, 59, 59, 999);
-
+      const { startOfDay, endOfDay } = currentDate();
       const bloomProgress = await BloomProgressModel.findOne({
         userId,
         bloomId,
@@ -59,8 +53,30 @@ class BloomProgress {
           $lte: endOfDay,
         },
       });
-      console.log("check", bloomProgress);
       return bloomProgress;
+    } catch (error) {
+      showError(error);
+    }
+  }
+
+  async addSession(userId: string, bloomId: string, newSession: sessionType) {
+    try {
+      const { startOfDay, endOfDay } = currentDate();
+      const progress = await BloomProgressModel.findOneAndUpdate(
+        {
+          userId,
+          bloomId,
+          date: { $gte: startOfDay, $lte: endOfDay },
+        },
+        {
+          $push: { sessions: newSession },
+        },
+        {
+          new: true, // Return the updated document
+          upsert: true, // Create a new document if none exists
+        }
+      );
+      return progress;
     } catch (error) {
       showError(error);
     }

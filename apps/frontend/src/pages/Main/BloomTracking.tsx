@@ -1,23 +1,19 @@
-
-
-
-
-
 import { useState, useEffect, useRef } from 'react';
 
 import { Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
-// import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'react-router-dom';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { BloomType } from '@/types';
 import tickAudio from '../../../public/tick.mp3'
 import celebrationAudio from '../../../public/celebration.mp3'
+import { useMutation } from '@tanstack/react-query';
+import api from '@/lib/axiosInstance';
 const BloomTracking = () => {
     const location = useLocation();
     const bloomData: BloomType = location.state?.additionalData;
-    const [duration,] = useState(0.2); //setDuration
-    const [timeRemaining, setTimeRemaining] = useState(0.2 * 60);
+    const [duration,] = useState(bloomData.preferredTime ?? 25); //setDuration
+    const [timeRemaining, setTimeRemaining] = useState((bloomData.preferredTime ?? 25) * 60);
     const [isRunning, setIsRunning] = useState(false);
 
     const tickSound = useRef<HTMLAudioElement | null>(null);
@@ -36,12 +32,18 @@ const BloomTracking = () => {
             : `${pad(minutes)}:${pad(seconds)}`;
     };
 
+
+    const addSession = useMutation({
+        mutationFn: () => {
+            return api.post(`/bloom-progress/session/${bloomData?._id}`, {
+                timeSpent: duration * 60,
+                loggedAt: new Date()
+            })
+        }
+    })
+
     // Start/Resume Timer
     const startTimer = () => {
-        // if (duration < 5 || duration > 90) {
-        //     alert('Please enter a time between 5 and 90 minutes');
-        //     return;
-        // }
         setIsRunning(true);
     };
 
@@ -85,12 +87,15 @@ const BloomTracking = () => {
                 });
             }, 1000);
         } else if (timeRemaining === 0) {
-            completeSound.current?.play()
+            completeSound.current?.play();
+            addSession.mutate()
             resetTimer()
             setIsRunning(false);
         }
 
         return () => clearInterval(interval);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isRunning, timeRemaining]);
 
 
@@ -144,18 +149,6 @@ const BloomTracking = () => {
 
     return (
         <div className="flex items-center justify-center flex-col w-full h-full">
-            {/* <div className="flex items-center space-x-4">
-                <Timer className="text-blue-600" />
-                <Input
-                    type="number"
-                    placeholder="Enter minutes (5-90)"
-                    value={duration}
-                    onChange={(e) => handleDurationChange(e.target.value)}
-                    min={5}
-                    max={90}
-                    className="flex-grow"
-                />
-            </div> */}
             <p className='bg-[#a1d6b263] px-3 py-1 rounded-lg border-[#A1D6B2] border text-sm'>{bloomData?.name}</p>
 
 
