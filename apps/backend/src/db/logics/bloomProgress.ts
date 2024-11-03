@@ -32,7 +32,7 @@ class BloomProgress {
     try {
       const bloomProgress = await BloomProgressModel.findOne({
         userId,
-        bloomId
+        bloomId,
       });
 
       return bloomProgress;
@@ -41,18 +41,29 @@ class BloomProgress {
     }
   }
 
-  async checkBloomCreate(userId:string,bloomId:string){
+  async checkBloomCreate(userId: string, bloomId: string) {
     try {
-        const bloomProgress = await BloomProgressModel.findOne({
-          userId,
-          bloomId
-        //   date:
-        });
-  
-        return bloomProgress;
-      } catch (error) {
-        showError(error);
-      }
+      const startOfDay = new Date();
+      // Set to start of the day in UTC
+      startOfDay.setUTCHours(0, 0, 0, 0);
+
+      const endOfDay = new Date();
+      // Set to end of the day in UTC
+      endOfDay.setUTCHours(23, 59, 59, 999);
+
+      const bloomProgress = await BloomProgressModel.findOne({
+        userId,
+        bloomId,
+        date: {
+          $gte: startOfDay,
+          $lte: endOfDay,
+        },
+      });
+      console.log("check", bloomProgress);
+      return bloomProgress;
+    } catch (error) {
+      showError(error);
+    }
   }
 }
 
