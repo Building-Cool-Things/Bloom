@@ -12,19 +12,19 @@ const Dashboard = () => {
     const { data } = await api.get('/bloom/all')
     return data
   }
-  const bloom = useQuery({ queryKey: ['bloom'], queryFn: getBloom })
-  console.log('user', user)
+  const blooms = useQuery({ queryKey: ['bloom'], queryFn: getBloom })
+
   return (
     <div className="p-6">
       <p className="text-3xl">Hello👋🏼, &nbsp; <span className="gradient-text font-semibold">{user?.name}</span></p>
-      <div className="flex items-start justify-start gap-x-10 flex-wrap w-full mx-0 mt-14">
+      <div className="flex items-start justify-start gap-10 flex-wrap w-full mx-0 mt-14">
         <CreateBloom />
-        {bloom?.data?.bloom.map((b: BloomType) => <div key={b._id} className="h-44 w-44 p-[1px] card rounded-lg card-hover cursor-pointer flex items-center justify-center text-center"
+        {blooms?.data?.bloom.map((bloom: BloomType) => <div key={bloom._id} className="h-44 w-44 p-[1px] card rounded-lg card-hover cursor-pointer flex items-center justify-center text-center"
           onClick={() => {
-            navigate(`/bloom/${b.name.toLowerCase().split(" ").join('-')}/${b._id}`)
+            navigate(`/bloom/${bloom.name.toLowerCase().split(" ").join('-')}/${bloom._id}`)
           }}
         >
-          <p>{b.name}</p>
+          <p>{bloom.name}</p>
         </div>)}
 
       </div>

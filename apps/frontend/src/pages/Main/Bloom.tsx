@@ -1,25 +1,27 @@
 
 import { Button } from '@/components/ui/button';
 import api from '@/lib/axiosInstance';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import formatTime from '@/utils/formateTime';
+import { useEffect } from 'react';
 
 const Bloom = () => {
   const navigate = useNavigate()
   const { id } = useParams();
 
   const { data } = useQuery({
-    queryKey: ['check-user'],
+    queryKey: ['bloom-by-id'],
     queryFn: async () => {
       const { data } = await api.get(`/bloom/${id}`)
       return data
     },
-
+    enabled: !!id
   })
-  console.log('data', data)
+
+
 
   const handleTracking = () => {
     navigate('tracking', {
@@ -28,6 +30,21 @@ const Bloom = () => {
       }
     })
   }
+
+
+  const bloomMutation = useMutation({
+    mutationFn: () => {
+      return api.post(`/bloom-progress/create/${data?.bloom._id}`)
+    }
+  })
+
+
+  useEffect(() => {
+    if (data) {
+      bloomMutation.mutate()
+    }
+  }, [data])
+
 
   return (
     <div className='w-full h-full p-6'>

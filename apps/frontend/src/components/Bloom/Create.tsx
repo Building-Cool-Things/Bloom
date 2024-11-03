@@ -1,5 +1,5 @@
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Plus } from 'lucide-react'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
@@ -15,6 +15,7 @@ import api from '@/lib/axiosInstance'
 import Loader from '../Loader'
 import { useState } from 'react'
 import { LowerLimit, TIME_VALUES, UpperLimit } from '@/Constants/TImes'
+
 const formSchema = z.object({
     name: z.string().min(2, {
         message: "Name must be at least 2 characters.",
@@ -27,8 +28,10 @@ const formSchema = z.object({
 })
 
 const CreateBloom = () => {
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
     const queryClient = useQueryClient()
+    const [sliderValue, setSliderValue] = useState([5]);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -45,6 +48,8 @@ const CreateBloom = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['bloom'] })
             setOpen(false)
+            setSliderValue([5])
+            form.reset()
         }
     })
 
@@ -56,7 +61,7 @@ const CreateBloom = () => {
         }
         bloomMutation.mutate(data);
     }
-    const [value, setValue] = useState([5]);
+
 
 
     const handleValueChange = (newValue: number[]) => {
@@ -65,20 +70,20 @@ const CreateBloom = () => {
         const closestStep = TIME_VALUES.reduce((prev, curr) => {
             return Math.abs(curr - actualValue) < Math.abs(prev - actualValue) ? curr : prev;
         });
-        setValue([closestStep]);
+        setSliderValue([closestStep]);
         return [closestStep]
 
     };
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger>
-                <div className="h-44 w-44 p-[1px] bg-gradient-to-r from-lime-500 to-emerald-500 rounded-lg card-hover">
-                    <div className="rounded-lg p-4  flex flex-col items-center justify-center gap-4 cursor-pointer card h-full">
-                        <Plus size={32} />
-                        <p className="text-lg  font-head font-semibold">Create Bloom</p>
-                    </div>
+
+            <div className="h-44 w-44 p-[1px] bg-gradient-to-r from-lime-500 to-emerald-500 rounded-lg card-hover" onClick={() => setOpen(true)}>
+                <div className="rounded-lg p-4  flex flex-col items-center justify-center gap-4 cursor-pointer card h-full">
+                    <Plus size={32} />
+                    <p className="text-lg  font-head font-semibold">Create Bloom</p>
                 </div>
-            </DialogTrigger>
+            </div>
+
             <DialogContent className="card">
                 <DialogHeader>
                     <DialogTitle className="tracking-normal gradient-text">Start Your Bloom</DialogTitle>
@@ -109,7 +114,7 @@ const CreateBloom = () => {
                                             <FormLabel>Daily Commitment</FormLabel>
 
                                             <div className="grid grid-cols-[5fr_1fr] items-center gap-3 pb-4">
-                                                <Slider value={value}
+                                                <Slider value={sliderValue}
                                                     onValueChange={
                                                         (value) => {
                                                             const val = handleValueChange(value)
