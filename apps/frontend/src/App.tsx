@@ -1,5 +1,5 @@
 
-import { AnimatePresence } from "framer-motion"
+// import { AnimatePresence } from "framer-motion"
 import { Route, Routes, useLocation } from "react-router-dom"
 import { Toaster } from 'react-hot-toast';
 import './App.css'
@@ -19,13 +19,12 @@ const App = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <AnimatePresence mode="wait">
         <Navbar />
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<CheckUser />} />
+          <Route path="/check" element={<CheckUser />} />
           <Route path="/sign-in" element={<Signup />} />
           <Route element={<PrivateRoutes />}>
-            <Route path='/dashboard' element={<Dashboard />} />
+            <Route path='/' element={<Dashboard />} />
             <Route path='/bloom/:name/:id' element={<Bloom />} />
             <Route path='/bloom/:name/:id/tracking' element={<BloomTracking />} />
 
@@ -33,7 +32,6 @@ const App = () => {
 
         </Routes>
 
-      </AnimatePresence>
       <Toaster position="top-center" reverseOrder={false} />
     </div>
 

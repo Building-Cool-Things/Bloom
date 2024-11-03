@@ -1,4 +1,8 @@
+import api from "@/lib/axiosInstance";
+import { useMutation, UseMutationResult } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
 import React, { Dispatch, SetStateAction, useContext, useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 interface User {
      _id: string,
@@ -16,7 +20,8 @@ interface User {
 
 interface UserContextType {
      user: User | null,
-     setUser: Dispatch<SetStateAction<User | null>>
+     setUser: Dispatch<SetStateAction<User | null>>,
+     logoutMutation: UseMutationResult<AxiosResponse<unknown, unknown>, Error, void, unknown>
 }
 interface ProviderProps {
      children?: React.ReactNode
@@ -26,10 +31,20 @@ const UserContext = React.createContext<UserContextType | null>(null);
 
 
 export const UserProvider: React.FC<ProviderProps> = ({ children }) => {
+     const navigate = useNavigate()
      const [user, setUser] = useState<User | null>(null)
 
+     const logoutMutation = useMutation({
+          mutationFn: () => {
+               return api.post(`/user/logout`)
+          },
+          onSuccess: () => {
+               setUser(null)
+               navigate('/sign-in')
+          }
+     })
      return (
-          <UserContext.Provider value={{ user, setUser }}>
+          <UserContext.Provider value={{ user, setUser, logoutMutation }}>
                {children}
           </UserContext.Provider>
      )

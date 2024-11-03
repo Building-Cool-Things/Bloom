@@ -15,19 +15,20 @@ const CheckUser = () => {
             const { data } = await api.get('/user/check')
             return data
         },
-
+        retry: 2
     })
-    console.log('data', data)
+
     useEffect(() => {
-        if (!isLoading && !error && data) {
-            console.log('user', data)
-            setUser(data?.user);
-            navigate('/dashboard')
-        } else if (!isLoading && !data) {
+
+        if (!isLoading && error && !data) {
             navigate('/sign-in')
+        } else if (!isLoading && data) {
+            setUser(data?.user);
+            navigate('/')
         }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data]);
+    }, [isLoading]);
 
     if (isLoading) {
         return (

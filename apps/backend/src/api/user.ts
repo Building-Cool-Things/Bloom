@@ -1,6 +1,7 @@
 import express, { Router, Request, Response, RequestHandler } from "express";
 import passport from "passport";
 import isAuthenticated from "../helpers/isAuthenticated";
+import showError from "../utils/showError";
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.get(
 router.get(
   "/auth/callback/google",
   passport.authenticate("google", {
-    successRedirect: "http://localhost:5173",
+    successRedirect: "http://localhost:5173/check",
     failureRedirect: "http://localhost:5173/sign-in",
   })
 );
@@ -30,16 +31,22 @@ router.get("/check", isAuthenticated, (req: Request, res: Response): any => {
       });
     }
   } catch (err) {
-    console.log(err);
+    showError(err);
   }
 });
 
-router.get("/logout", (req, res) => {
-  req.logout(() => {
-    req.session.destroy(() => {
-      return;
+router.post("/logout", (req, res) => {
+  try {
+    req.logout(() => {
+      req.session.destroy(() => {
+        return res.json({
+          success: true,
+        });
+      });
     });
-  });
+  } catch (err) {
+    showError(err);
+  }
 });
 
 export default router;

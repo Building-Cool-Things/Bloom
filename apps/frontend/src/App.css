@@ -23,3 +23,7 @@
 .CircularProgressbar {
   width: 120px !important;
 }
+
+.active-route svg{
+  @apply stroke-emerald-500
+}
