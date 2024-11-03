@@ -3,21 +3,26 @@
 
 
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-import { Pause, Play, RotateCcw } from 'lucide-react';
+import { Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 // import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'react-router-dom';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
+import { BloomType } from '@/types';
+import tickAudio from '../../../public/tick.mp3'
+import celebrationAudio from '../../../public/celebration.mp3'
 const BloomTracking = () => {
     const location = useLocation();
-    const bloomData = location.state?.additionalData;
-    const [duration,] = useState(25); //setDuration
-    const [timeRemaining, setTimeRemaining] = useState(25 * 60);
+    const bloomData: BloomType = location.state?.additionalData;
+    const [duration,] = useState(0.2); //setDuration
+    const [timeRemaining, setTimeRemaining] = useState(0.2 * 60);
     const [isRunning, setIsRunning] = useState(false);
 
+    const tickSound = useRef<HTMLAudioElement | null>(null);
+    const completeSound = useRef<HTMLAudioElement | null>(null);
+    const [isTickSoundOn, setIsTickSoundOn] = useState(true)
     // Detailed time formatting
     const formatTime = (totalSeconds: number) => {
         const hours = Math.floor(totalSeconds / 3600);
@@ -33,10 +38,10 @@ const BloomTracking = () => {
 
     // Start/Resume Timer
     const startTimer = () => {
-        if (duration < 5 || duration > 90) {
-            alert('Please enter a time between 5 and 90 minutes');
-            return;
-        }
+        // if (duration < 5 || duration > 90) {
+        //     alert('Please enter a time between 5 and 90 minutes');
+        //     return;
+        // }
         setIsRunning(true);
     };
 
@@ -51,19 +56,44 @@ const BloomTracking = () => {
         setTimeRemaining(duration * 60);
     };
 
+    useEffect(() => {
+        // Create audio elements
+        tickSound.current = new Audio(tickAudio);
+        completeSound.current = new Audio(celebrationAudio)
+        // Set volume
+        tickSound.current.volume = 0.2;
+        tickSound.current.volume = 0.8;
+        return () => {
+            completeSound.current = null
+            tickSound.current = null;
+        };
+    }, []);
+
     // Timer Countdown Logic
     useEffect(() => {
         let interval: number;
         if (isRunning && timeRemaining > 0) {
             interval = setInterval(() => {
-                setTimeRemaining(prev => prev - 1);
+                setTimeRemaining(time => {
+                    // Play tick sound
+                    if (isTickSoundOn) {
+                        if (time > 1) {
+                            tickSound.current?.play();
+                        }
+                    }
+                    return time - 1;
+                });
             }, 1000);
         } else if (timeRemaining === 0) {
+            completeSound.current?.play()
+            resetTimer()
             setIsRunning(false);
         }
 
         return () => clearInterval(interval);
     }, [isRunning, timeRemaining]);
+
+
 
     // // Duration Change Handler
     // const handleDurationChange = (newDuration:number) => {
@@ -97,9 +127,6 @@ const BloomTracking = () => {
         return <TooltipProvider><div className="flex space-x-2 mt-10">{circles}</div></TooltipProvider>;
 
     };
-
-
-
 
 
     useEffect(() => {
@@ -145,6 +172,7 @@ const BloomTracking = () => {
                         className="card-hover bg-green-900 hover:bg-green-900 flex 
                         items-center text-white/80"
                         disabled={timeRemaining === 0}
+                        size={'sm'}
                     >
                         <Play /> <p className='font-semibold tracking-wider'>Start</p>
                     </Button>
@@ -155,6 +183,7 @@ const BloomTracking = () => {
                         onClick={pauseTimer}
                         className="bg-yellow-900 card-hover hover:bg-yellow-900 flex 
                         items-center text-white/80"
+                        size={'sm'}
                     >
                         <Pause /> <p className='font-semibold tracking-wider'>Pause</p>
                     </Button>
@@ -165,9 +194,19 @@ const BloomTracking = () => {
                     className="bg-red-900 hover:bg-red-900 card-hover flex 
                         items-center "
                     disabled={timeRemaining === duration * 60}
+                    size={'sm'}
                 >
                     <RotateCcw /> <p className='font-semibold tracking-wider'>Reset</p>
                 </Button>
+                {
+                    isTickSoundOn ? <VolumeX onClick={() => {
+                        setIsTickSoundOn(false)
+                    }} className='cursor-pointer' /> : <Volume2 onClick={() => {
+                        setIsTickSoundOn(true)
+                    }} className='cursor-pointer' />
+                }
+
+
             </div>
 
         </div>

@@ -5,4 +5,6 @@ export type BloomType = {
   updatedAt?: Date;
   userId: string;
   _id: string;
+  preferredTime: number;
+  numberOfSessions: number;
 };

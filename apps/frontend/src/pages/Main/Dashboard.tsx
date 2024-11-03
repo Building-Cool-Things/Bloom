@@ -39,9 +39,8 @@ const Dashboard = () => {
         >
           <p>{bloom.name}</p>
           <div className="absolute bottom-3 right-3">
-            <Button className='card-hover text-[0.56rem] px-2' size={'sm'} variant={'gradient'} onClick={(e) => handleTracking(e, bloom)}>Start Tracking</Button>
+            <Button className='card-hover text-[0.56rem] px-2 tracking-wider' size={'sm'} variant={'gradient'} onClick={(e) => handleTracking(e, bloom)}>Track</Button>
           </div>
-
         </div>)}
 
       </div>
