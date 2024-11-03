@@ -31,11 +31,14 @@ const Bloom = () => {
   }
 
 
-  const bloomMutation = useMutation({
-    mutationFn: () => {
-      return api.post(`/bloom/create`, bloomData)
-    }
-  })
+  // const bloomMutation = useMutation({
+  //   mutationFn: () => {
+  //     return api.post(`/bloom-progress/create`)
+  //   }
+  // })
+
+
+  // bloomMutation.mutate()
 
   return (
     <div className='w-full h-full p-6'>
