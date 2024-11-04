@@ -64,4 +64,34 @@ router.post(
   }
 );
 
+router.get(
+  "/session-completed/:bloomId/:progressId",
+  isAuthenticated,
+  async (req: Request, res: Response): Promise<any> => {
+    try {
+      const userId = (req.user as ExtendedUserType)?._id;
+      const bloomId = req.params.bloomId;
+      const progressId = req.params.progressId;
+      console.log(userId, bloomId, progressId);
+      const completedSessions = await BloomProgress.getCompletedSessions(
+        userId,
+        progressId,
+        bloomId
+      );
+      if (completedSessions) {
+        res.json({
+          success: true,
+          completedSessions,
+        });
+      } else {
+        res.json({
+          success: false,
+        });
+      }
+    } catch (err) {
+      showError(err);
+    }
+  }
+);
+
 export default router;

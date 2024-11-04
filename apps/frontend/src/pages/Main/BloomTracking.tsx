@@ -3,13 +3,15 @@ import { useState, useEffect, useRef } from 'react';
 import { Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'react-router-dom';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
 import { BloomType } from '@/types';
 import tickAudio from '../../../public/tick.mp3'
 import celebrationAudio from '../../../public/celebration.mp3'
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axiosInstance';
+import SessionsCount from '@/components/Bloom/SessionsCount';
 const BloomTracking = () => {
+    const queryClient = useQueryClient()
     const location = useLocation();
     const bloomData: BloomType = location.state?.additionalData;
     const [duration,] = useState(bloomData.preferredTime ?? 25); //setDuration
@@ -112,47 +114,59 @@ const BloomTracking = () => {
 
 
 
-    const sessionCounts = (sessions: number) => {
-        const circles = [];
+    useEffect(() => {
+        if (isRunning) {
+            const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+                // Prevent the default browser behavior
+                event.preventDefault();
+            };
 
-        for (let i = 1; i <= sessions; i++) {
-            circles.push(
-                <Tooltip key={i}>
-                    <TooltipTrigger asChild>
-                        <div key={i} className='w-5 h-5 rounded-full border-2 cursor-pointer border-[#2E2E2E]'></div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Session {i}</p>
-                    </TooltipContent>
-                </Tooltip>
+            window.addEventListener('beforeunload', handleBeforeUnload);
 
-            );
+            return () => {
+                window.removeEventListener('beforeunload', handleBeforeUnload);
+            };
         }
+    }, []);
 
-        return <TooltipProvider><div className="flex space-x-2 mt-10">{circles}</div></TooltipProvider>;
 
-    };
+
+    const { mutate, data: bloomProgress } = useMutation({
+        mutationFn: () => {
+            return api.post(`/bloom-progress/create/${bloomData?._id}`)
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['get-sessions'] });
+        }
+    })
+
+    console.log('bloomProgress', bloomProgress)
+
+    const { data } = useQuery({
+        queryKey: ['get-sessions', bloomProgress?.data._id],
+        queryFn: async () => {
+            const { data } = await api.get(`/bloom-progress/session-completed/${bloomData?._id}/${bloomProgress?.data.savedBloomProgress._id}`)
+            return data
+        },
+        enabled: !!bloomProgress && !!bloomData
+    })
+
+
+    console.log('data', data)
 
 
     useEffect(() => {
-        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-            // Prevent the default browser behavior
-            event.preventDefault();
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, []);
+        if (bloomData) {
+            mutate()
+        }
+    }, [bloomData])
 
     return (
         <div className="flex items-center justify-center flex-col w-full h-full">
             <p className='bg-[#a1d6b263] px-3 py-1 rounded-lg border-[#A1D6B2] border text-sm'>{bloomData?.name}</p>
 
+            <SessionsCount sessions={bloomData?.numberOfSessions} completedSessions={data?.completedSessions} />
 
-            {sessionCounts(bloomData?.numberOfSessions)}
 
             <div className="text-center text-9xl font-head font-bold text-white/95 tracking-wider mt-6" style={{ fontVariantNumeric: 'tabular-nums' }}>
                 {formatTime(timeRemaining)}

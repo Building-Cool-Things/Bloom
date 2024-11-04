@@ -36,6 +36,23 @@ class Bloom {
       showError(error);
     }
   }
+
+  async getpreferredBloomSession(userId: string, id: string) {
+    try {
+      const sessionCount = await BloomModel.findOne(
+        {
+          userId,
+          _id: id,
+        },
+        {
+          numberOfSessions: true,
+        }
+      );
+      return sessionCount;
+    } catch (error) {
+      showError(error);
+    }
+  }
 }
 
 export default Bloom;

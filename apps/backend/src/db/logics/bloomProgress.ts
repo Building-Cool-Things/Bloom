@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import currentDate from "../../utils/currentDate";
 import showError from "../../utils/showError";
 import BloomProgressModel, { sessionType } from "../models/BloomProgress";
@@ -77,6 +78,33 @@ class BloomProgress {
         }
       );
       return progress;
+    } catch (error) {
+      showError(error);
+    }
+  }
+
+  async getSessionCount(userId: string, progressId: string) {
+    console.log(userId, progressId);
+    try {
+      const sessionCount = await BloomProgressModel.aggregate([
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(progressId),
+            userId: userId,
+          },
+        },
+        {
+          $project: {
+            totalSessions: { $size: "$sessions" }, // Count the number of sessions
+          },
+        },
+      ]);
+
+      if (sessionCount && sessionCount.length > 0) {
+        return sessionCount[0]?.totalSessions;
+      } else {
+        return 0;
+      }
     } catch (error) {
       showError(error);
     }

@@ -1,12 +1,12 @@
 
 import { Button } from '@/components/ui/button';
 import api from '@/lib/axiosInstance';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import formatTime from '@/utils/formateTime';
-import { useEffect } from 'react';
+
 
 const Bloom = () => {
   const navigate = useNavigate()
@@ -30,21 +30,6 @@ const Bloom = () => {
       }
     })
   }
-
-
-  const bloomMutation = useMutation({
-    mutationFn: () => {
-      return api.post(`/bloom-progress/create/${data?.bloom._id}`)
-    }
-  })
-
-
-  useEffect(() => {
-    if (data) {
-      bloomMutation.mutate()
-    }
-  }, [data])
-
 
   return (
     <div className='w-full h-full p-6'>
