@@ -6,6 +6,8 @@ import { BloomType } from "@/types"
 import { useQuery } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
 import { MouseEvent } from "react";
+import Calander from "@/components/Calendar/Calander"
+import AnalyticsCal from "@/components/Calendar/AnalyticsCal"
 const Dashboard = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -42,6 +44,10 @@ const Dashboard = () => {
             <Button className='card-hover text-[0.56rem] px-2 tracking-wider' size={'sm'} variant={'gradient'} onClick={(e) => handleTracking(e, bloom)}>Track</Button>
           </div>
         </div>)}
+
+        <Calander/>
+        <AnalyticsCal/>
+
 
       </div>
     </div>

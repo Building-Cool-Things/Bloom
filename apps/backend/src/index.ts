@@ -33,9 +33,10 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.get("/health", (req, res) => {
+  res.send("I am ALIVE");
+});
 app.use("/api/v1", apiRoutes);
-
 
 const PORT = process.env.PORT;
 

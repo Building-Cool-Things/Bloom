@@ -1,0 +1,68 @@
+# services:
+#   backend:
+#     build:
+#       context: .
+#       dockerfile: ./apps/backend/Dockerfile
+#     ports:
+#       - "8080:8080"
+#     env_file:
+#       - ./apps/backend/.env  # Load backend environment variables
+
+#   frontend:
+#     build:
+#       context: .
+#       dockerfile: ./apps/frontend/Dockerfile
+#     ports:
+#       - "5173:5173"
+#     env_file:
+#       - ./apps/frontend/.env  # Load frontend environment variables
+
+
+
+
+
+
+version: '3.8'  # Good practice to specify version
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./apps/backend/Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./apps/backend/.env
+    environment:
+      - NODE_ENV=production  # Explicitly set Node environment
+    restart: unless-stopped  # Adds container recovery
+    healthcheck:  # Add health monitoring
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]  # Assuming you have a health endpoint
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./apps/frontend/Dockerfile
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./apps/frontend/.env
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend  # Ensures backend starts first
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  app-data:  # Define a volume if you need persistent data

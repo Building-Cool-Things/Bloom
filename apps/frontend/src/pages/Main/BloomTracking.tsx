@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { useLocation } from 'react-router-dom';
 
 import { BloomType } from '@/types';
-import tickAudio from '../../../public/tick.mp3'
-import celebrationAudio from '../../../public/celebration.mp3'
+import tickAudio from '/tick.mp3'
+import celebrationAudio from '/celebration.mp3'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axiosInstance';
 import SessionsCount from '@/components/Bloom/SessionsCount';
@@ -14,7 +14,8 @@ const BloomTracking = () => {
     const queryClient = useQueryClient()
     const location = useLocation();
     const bloomData: BloomType = location.state?.additionalData;
-    const [duration,] = useState(bloomData.preferredTime ?? 25); //setDuration
+    console.log('bloomData', bloomData)
+    const [duration,] = useState(bloomData.preferredTime ?? 25); 
     const [timeRemaining, setTimeRemaining] = useState((bloomData.preferredTime ?? 25) * 60);
     const [isRunning, setIsRunning] = useState(false);
 
@@ -41,6 +42,9 @@ const BloomTracking = () => {
                 timeSpent: duration * 60,
                 loggedAt: new Date()
             })
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['get-sessions'] });
         }
     })
 
@@ -206,14 +210,12 @@ const BloomTracking = () => {
                     <RotateCcw /> <p className='font-semibold tracking-wider'>Reset</p>
                 </Button>
                 {
-                    isTickSoundOn ? <VolumeX onClick={() => {
+                    isTickSoundOn ? <Volume2 onClick={() => {
                         setIsTickSoundOn(false)
-                    }} className='cursor-pointer' /> : <Volume2 onClick={() => {
+                    }} className='cursor-pointer' /> : <VolumeX onClick={() => {
                         setIsTickSoundOn(true)
                     }} className='cursor-pointer' />
                 }
-
-
             </div>
 
         </div>
